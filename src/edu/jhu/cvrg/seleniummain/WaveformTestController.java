@@ -5,6 +5,7 @@ import java.io.IOException;
 import edu.jhu.cvrg.authenticationtests.GlobusLogin;
 import edu.jhu.cvrg.waveformtests.WaveformTestProperties;
 import edu.jhu.cvrg.waveformtests.analyze.AnalyzeTester;
+import edu.jhu.cvrg.waveformtests.download.DownloadTester;
 import edu.jhu.cvrg.waveformtests.upload.UploadTester;
 import edu.jhu.cvrg.waveformtests.visualize.VisualizeTester;
 
@@ -112,29 +113,33 @@ public class WaveformTestController extends TestController {
 			String visualizePath = testProps.getVisualizePath();
 			String welcomePath = testProps.getWelcomePath();
 			String analyzePath = testProps.getAnalyzePath();
+			String downloadPath = testProps.getDownloadPath();
 			
 			UploadTester upload = new UploadTester(hostname, uploadPath, welcomePath, username, password, true);
 			
 			
 			upload.login();
-			upload.validateFolderTree();
 			upload.uploadFile();
 			upload.logout();
 			
 			AnalyzeTester analysis = new AnalyzeTester(hostname, analyzePath, welcomePath, username, password, true);
 			
-			analysis.login();
-	
+			analysis.login(false);
 			analysis.analyzeOneECG();
-	
-			
+			analysis.logout();
 			
 			VisualizeTester visualize = new VisualizeTester(hostname, visualizePath, welcomePath, username, password, true);
 			
-			visualize.login();
-			visualize.goToPage();
+			visualize.login(false);
 			visualize.testVisualizeViews();
+			visualize.logout();
 			
+			DownloadTester download = new DownloadTester(hostname, downloadPath, welcomePath, username, password, true);
+			
+			download.login(false);
+			download.testDownloadPage();
+			download.logout();
+			download.close();
 	
 			logger.addToLog("Waveform 3 Selenium Tests Completed");
 		} catch (IOException e) {

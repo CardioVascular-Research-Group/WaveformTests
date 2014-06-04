@@ -16,12 +16,13 @@ import edu.jhu.cvrg.seleniummain.BaseFunctions;
 import edu.jhu.cvrg.seleniummain.BrowserEnum;
 import edu.jhu.cvrg.seleniummain.LogfileManager;
 import edu.jhu.cvrg.seleniummain.TestNameEnum;
+import edu.jhu.cvrg.waveformtests.CommonWaveformTests;
 
 /**
  * @author bbenite1
  *
  */
-public class UploadTester extends BaseFunctions {
+public class UploadTester extends CommonWaveformTests {
 
 	/**
 	 * @param site
@@ -45,13 +46,14 @@ public class UploadTester extends BaseFunctions {
 	}
 	
 	public void uploadFile() throws IOException {
+		goToPage();
 		String newFolderBox = "A0684:formUpload:txtFoldername";
 		String addFolder = "A0684:formUpload:btnAdd";
 		String uploadFolderLocation = "SeleniumTest";
 		
 		try {
 			// Test creating a new folder
-			portletDriver.manage().timeouts().implicitlyWait(8, TimeUnit.SECONDS);
+			portletDriver.manage().timeouts().implicitlyWait(12, TimeUnit.SECONDS);
 			
 			WebElement newFolderInput = portletDriver.findElement(By.id(newFolderBox));
 			
@@ -65,11 +67,11 @@ public class UploadTester extends BaseFunctions {
 			portletLogMessages.add("Entering name in the the Text Input has been successful");
 			logger.incrementUploadSuccess();
 			
-			portletDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+			portletDriver.manage().timeouts().implicitlyWait(7, TimeUnit.SECONDS);
 			
 			portletDriver.findElement(By.id(addFolder)).click();
 			
-			portletDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+			portletDriver.manage().timeouts().implicitlyWait(7, TimeUnit.SECONDS);
 			
 			portletLogMessages.add("New folder created");
 			logger.incrementUploadSuccess();

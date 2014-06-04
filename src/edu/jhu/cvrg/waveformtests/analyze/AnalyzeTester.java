@@ -16,9 +16,10 @@ import edu.jhu.cvrg.seleniummain.BaseFunctions;
 import edu.jhu.cvrg.seleniummain.BrowserEnum;
 import edu.jhu.cvrg.seleniummain.LogfileManager;
 import edu.jhu.cvrg.seleniummain.TestNameEnum;
+import edu.jhu.cvrg.waveformtests.CommonWaveformTests;
 import edu.jhu.cvrg.waveformtests.UIComponentChecks;
 
-public class AnalyzeTester extends BaseFunctions implements UIComponentChecks{
+public class AnalyzeTester extends CommonWaveformTests implements UIComponentChecks{
 
 	public AnalyzeTester(String site, String viewPath, String welcomePath, String userName, String passWord, boolean loginRequired, BrowserEnum whichBrowser) {
 		super(site, viewPath, welcomePath, userName, passWord, loginRequired, whichBrowser);
@@ -35,14 +36,16 @@ public class AnalyzeTester extends BaseFunctions implements UIComponentChecks{
 	}
 	
 	public void analyzeOneECG() throws IOException {
+		goToPage();
 		try {
 			
 			validateFolderTree();
-			selectSingleECG();
+			this.simulateDragAndDrop("xpath=//span[@class='ui-treenode-icon ui-icon ui-icon ui-icon-note' and 1]", "id=A6680:formAnalyze:availableStudy_data");
+			//selectSingleECG();
 			validateCheckBoxes();
 			
 			// click the start analysis button and wait for it to finish
-			portletDriver.findElement(By.id("A6680:formAnalyze:j_idt27")).click();
+			portletDriver.findElement(By.id("A6680:formAnalyze:j_idt31")).click();
 			
 			WebDriverWait analysisWait = new WebDriverWait(portletDriver, 15); 
 		
@@ -86,10 +89,15 @@ public class AnalyzeTester extends BaseFunctions implements UIComponentChecks{
 	public void selectSingleECG() throws NoSuchElementException, StaleElementReferenceException{
 		
 		List<WebElement> leafNodes = portletDriver.findElements(By.className("ui-icon-note"));
-		WebElement firstNode = leafNodes.get(0);
-		
-		firstNode.click();
-		portletDriver.findElement(By.id("A6680:formAnalyze:btnDisplay")).click();	
+		if(!(leafNodes.isEmpty())) {
+			WebElement firstNode = leafNodes.get(0);
+			
+			firstNode.click();
+			portletDriver.findElement(By.id("A6680:formAnalyze:btnDisplay")).click();
+		}
+		else {
+			throw new NoSuchElementException("AnalyzeTester.java - selectSingleECG():  Unable to find leaf nodes in the folder tree on Analyze Portlet");
+		}
 	}
 
 	@Override
@@ -144,5 +152,12 @@ public class AnalyzeTester extends BaseFunctions implements UIComponentChecks{
 			checkBoxes.get(7).click();
 		
 	}
+
+	@Override
+	public void selectMultipleECGs() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

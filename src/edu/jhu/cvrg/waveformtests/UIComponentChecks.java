@@ -7,7 +7,7 @@ package edu.jhu.cvrg.waveformtests;
  * The collection of methods that pertain to validating user interface components (buttons, checkboxes, etc).  It is primarly
  * used to ensure that the component takes an action.  It is left to the implementing class to determine valid output.
  * 
- * This only covers items that are used on all (or almost all) of the portlets.
+ * This only covers items that are used on the portlets that require them, namely Analyze and Visualize.
  * 
  * @author bbenite1
  *
@@ -24,4 +24,10 @@ public interface UIComponentChecks {
 	 * Tests the ability to select an ECG. 
 	 */	
 	public void selectSingleECG();
+
+	/**
+	 * Tests the ability to select multiple ECGs. 
+	 */	
+	public void selectMultipleECGs();
+
 }

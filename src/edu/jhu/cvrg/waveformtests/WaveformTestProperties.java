@@ -16,13 +16,11 @@ public class WaveformTestProperties {
 	private String visualizePath;
 	private String welcomePath;
 	private String analyzePath;
+	private String downloadPath;
 	
 	// IDs for Visualize buttons for multi lead displays
 	
 	private String viewECGListMulti;
-	private String centerMulti;
-	private String centerModeMulti;
-	private String centerScaleMulti;
 	private String resetMulti;
 	private String fillScreenMulti;
 
@@ -59,11 +57,9 @@ public class WaveformTestProperties {
 			visualizePath = props.getProperty("visualizePath", "confignotfound");
 			welcomePath = props.getProperty("welcomePath", "confignotfound");
 			analyzePath = props.getProperty("analyzePath", "confignotfound");
+			downloadPath = props.getProperty("downloadPath", "confignotfound");
 			
 			viewECGListMulti = props.getProperty("viewECGListMulti", "confignotfound");
-			centerMulti = props.getProperty("centerMulti", "confignotfound");
-			centerModeMulti = props.getProperty("centerModeMulti", "confignotfound");
-			centerScaleMulti = props.getProperty("centerScaleMulti", "confignotfound");
 			resetMulti = props.getProperty("resetMulti", "confignotfound");
 			fillScreenMulti = props.getProperty("fillScreenMulti", "confignotfound");
 			
@@ -94,12 +90,13 @@ public class WaveformTestProperties {
 		return analyzePath;
 	}
 	
+	public String getDownloadPath() {
+		return downloadPath;
+	}
+	
 	public ArrayList<String> getMultiLeadNavButtons() {
 		ArrayList<String> allButtons = new ArrayList<String>();
 		
-		allButtons.add(centerMulti);
-		allButtons.add(centerModeMulti);
-		allButtons.add(centerScaleMulti);
 		allButtons.add(resetMulti);
 		allButtons.add(fillScreenMulti);
 		allButtons.add(firstMulti);
