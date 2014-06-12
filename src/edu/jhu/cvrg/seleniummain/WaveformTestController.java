@@ -21,80 +21,51 @@ public class WaveformTestController extends TestController {
 			System.exit(0);
 		}
 
-		String testType = args[0];
-		String hostname = args[1];
-		String username = args[2];
-		String password = args[3];
-		String logfilePath = args[4];
-
-		String commonPropsLocation = "./src/testconfig/global_properties.config";
-		String waveformPropsLocation = "./src/testconfig/waveform_properties.config";
-		
-		// initialize the Singleton instance of the global properties
-		CommonProperties init = CommonProperties.getInstance();
-		init.loadConfiguration(commonPropsLocation);
-		
-		WaveformTestController mainControl = new WaveformTestController(hostname, logfilePath, username, password);
-		
-		TestControlTypeEnum testTypeEnum = TestControlTypeEnum.valueOf(testType);
-		
-		switch(testTypeEnum) {
-			case LOGON:
-				mainControl.testAuthentication();
-				break;
-			case WAVEFORM:
-				mainControl.testWaveform(waveformPropsLocation);
-				break;
-			case ALL:
-				mainControl.testAuthentication();
-				mainControl.testWaveform(waveformPropsLocation);
-				break;
-			default:
-				// Exit
-				System.out.println("Invalid test option entered.\n");
-				System.out.println("Usage:  CVRG_Tests.jar <LOGON | WAVEFORM | CEP | ALL> <hostname> <username> <password> <logfile_location>\n");
-				System.exit(0);
-				break;
+		try {
+			String testType = args[0];
+			String hostname = args[1];
+			String username = args[2];
+			String password = args[3];
+			String logfilePath = args[4];
+	
+			String commonPropsLocation = "./src/testconfig/global_properties.config";
+			String waveformPropsLocation = "./src/testconfig/waveform_properties.config";
+			
+			// initialize the Singleton instance of the global properties
+			CommonProperties init = CommonProperties.getInstance();
+			init.loadConfiguration(commonPropsLocation);
+			
+			WaveformTestController mainControl = new WaveformTestController(hostname, logfilePath, username, password);
+			
+			TestControlTypeEnum testTypeEnum = TestControlTypeEnum.valueOf(testType);
+			
+			switch(testTypeEnum) {
+				case LOGON:
+					mainControl.testAuthentication();
+					break;
+				case WAVEFORM:
+					mainControl.testWaveform(waveformPropsLocation);
+					break;
+				case ALL:
+					mainControl.testAuthentication();
+					mainControl.testWaveform(waveformPropsLocation);
+					break;
+				default:
+					// Exit
+					System.out.println("Invalid test option entered.\n");
+					System.out.println("Usage:  CVRG_Tests.jar <LOGON | WAVEFORM | CEP | ALL> <hostname> <username> <password> <logfile_location>\n");
+					System.exit(0);
+					break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 		
 	}
 	
 	public WaveformTestController(String newHostname, String newLogfilePath, String newUsername, String newPassword) {
 		super(newHostname, newLogfilePath, newUsername, newPassword);
-	}
-	
-	public void testAuthentication() {
-		
-		try {
-			setup();
-			
-			String mainUser = commonProps.getMainUser();
-			String mainPassword = commonProps.getMainPassword();
-			String newUser = commonProps.getAltUser();
-			String newPassword = commonProps.getAltPassword();
-			
-			GlobusLogin gLogin = new GlobusLogin(hostname, initialWelcomePath, mainUser, mainPassword, true, whichBrowser);
-			boolean loginComplete;
-			
-			loginComplete = gLogin.testGlobus();
-			
-			if(loginComplete) {
-				gLogin.logout();
-			}
-			gLogin.close();
-			
-			
-			loginComplete = gLogin.testGlobus(newUser, newPassword, true);
-			
-			if(loginComplete) {
-				gLogin.logout();
-			}
-			gLogin.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 	}
 	
 	public void testWaveform(String propertiesFileLocation) {
@@ -115,28 +86,28 @@ public class WaveformTestController extends TestController {
 			String analyzePath = testProps.getAnalyzePath();
 			String downloadPath = testProps.getDownloadPath();
 			
-			UploadTester upload = new UploadTester(hostname, uploadPath, welcomePath, username, password, true);
+			UploadTester upload = new UploadTester(hostname, uploadPath, welcomePath, username, password, true, whichBrowser);
 			
 			
 			upload.login();
 			upload.uploadFile();
 			upload.logout();
 			
-			AnalyzeTester analysis = new AnalyzeTester(hostname, analyzePath, welcomePath, username, password, true);
+			AnalyzeTester analysis = new AnalyzeTester(hostname, analyzePath, welcomePath, username, password, upload.getDriver());
 			
-			analysis.login(false);
-			analysis.analyzeOneECG();
+			analysis.login();
+			analysis.runAnalysis();
 			analysis.logout();
 			
-			VisualizeTester visualize = new VisualizeTester(hostname, visualizePath, welcomePath, username, password, true);
+			VisualizeTester visualize = new VisualizeTester(hostname, visualizePath, welcomePath, username, password, upload.getDriver());
 			
-			visualize.login(false);
+			visualize.login();
 			visualize.testVisualizeViews();
 			visualize.logout();
 			
-			DownloadTester download = new DownloadTester(hostname, downloadPath, welcomePath, username, password, true);
+			DownloadTester download = new DownloadTester(hostname, downloadPath, welcomePath, username, password, upload.getDriver());
 			
-			download.login(false);
+			download.login();
 			download.testDownloadPage();
 			download.logout();
 			download.close();

@@ -33,6 +33,9 @@ public class VisualizeTester extends CommonWaveformTests implements UIComponentC
 	
 	public VisualizeTester(String site, String viewPath, String welcomePath, String userName, String passWord, boolean loginRequired, BrowserEnum whichBrowser) {
 		super(site, viewPath, welcomePath, userName, passWord, loginRequired, whichBrowser);
+		
+		currentPage = DisplayPanelEnum.INITIAL;
+		testProps = WaveformTestProperties.getInstance();
 	}
 	
 	public VisualizeTester(String site, String viewPath, String welcomePath,
@@ -46,17 +49,22 @@ public class VisualizeTester extends CommonWaveformTests implements UIComponentC
 	
 	public VisualizeTester(String site, String viewPath, String welcomePath, String userName, String passWord, WebDriver existingDriver) {
 		super(site, viewPath, welcomePath, userName, passWord, existingDriver);
+		
+		currentPage = DisplayPanelEnum.INITIAL;
+		testProps = WaveformTestProperties.getInstance();
 	}
 	
 	public void testVisualizeViews() throws IOException {
-		goToPage();		
+		goToPage();
 		selectECGFromTree();
 		validateButtons();
 		
 		pickLead();
 		
 		logger.addToLog(portletLogMessages, TestNameEnum.WAVEFORMVISUALIZE);
-		logger.addToLog(seleniumLogMessages, TestNameEnum.SELENIUM);
+		if(!seleniumLogMessages.isEmpty()) {
+			logger.addToLog(seleniumLogMessages, TestNameEnum.SELENIUM);
+		}
 	}
 	
 	public void pickLead() {
@@ -99,14 +107,16 @@ public class VisualizeTester extends CommonWaveformTests implements UIComponentC
 		
 		List<WebElement> ecgRows = portletDriver.findElements(By.xpath("//td[@role='gridcell']"));
 		if(!(ecgRows.isEmpty())) {
-		ecgRows.get(0).click();
-		portletDriver.findElement(By.id("A1576:formVisualize:btnView12LeadECGTest")).click();
-		portletDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-		
-		currentPage = DisplayPanelEnum.MULTILEAD;
+			ecgRows.get(0).click();
+			portletLogMessages.add("Clicked on a record with the name ");
+			portletDriver.findElement(By.id("A1576:formVisualize:btnView12LeadECGTest")).click();
+			
+			portletDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+			
+			currentPage = DisplayPanelEnum.MULTILEAD;
 		}
 		else {
-			throw new NoSuchElementException("Visualize.java, line " + new Throwable().getStackTrace()[0].getLineNumber() +  " - pickECGForDisplay():  Unable to select records in the selection table on Visualize Portlet");  // the new Throwable object was the easiest way to get the line number dynamically
+			throw new NoSuchElementException("Visualize.java, line " + new Throwable().getStackTrace()[0].getLineNumber() +  " - pickECGForDisplay():  Unable to select records in the selection table on Visualize Portlet.  Either they do not exist or Selenium was unable to locate them");  // the new Throwable object was the easiest way to get the line number dynamically
 		}
 	}
 
@@ -119,11 +129,25 @@ public class VisualizeTester extends CommonWaveformTests implements UIComponentC
 			break;
 		case MULTILEAD:
 			// primarily testing the navigation buttons
+			portletDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 			ArrayList<String> navButtons = testProps.getMultiLeadNavButtons();
 			
+			portletLogMessages.add("Checking navigation buttons");
 			for (String buttonID : navButtons) {
-				portletDriver.findElement(By.id(buttonID)).click();
-				portletDriver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+				try {
+					WebElement currentButton = portletDriver.findElement(By.id(buttonID));
+					String buttonName = currentButton.findElement(By.xpath("//span[@class='ui-button-text ui-c']")).getText();
+					portletLogMessages.add("Clicking on the " + buttonName + " button");
+					
+					portletDriver.findElement(By.xpath("//button[@id='" + buttonID + "']/span[@class='ui-button-text ui-c']")).click();
+					portletDriver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+				} catch (NoSuchElementException nse) {
+					seleniumLogMessages.add("An element was not found while validating the folder tree, here is more information:  \n" + LogfileManager.extractStackTrace(nse));
+				} catch (StaleElementReferenceException ser) {
+					seleniumLogMessages.add("An element in the folder tree was present at some point in the DOM but is no longer valid, here is more information:  \n" + LogfileManager.extractStackTrace(ser));
+				} catch (Exception e) {
+					seleniumLogMessages.add("A different error has cropped up in the folder tree, here is more information:  \n" + LogfileManager.extractStackTrace(e));
+				}
 			}
 			
 			String textInputID = testProps.getJumpToInputBox();
@@ -132,7 +156,10 @@ public class VisualizeTester extends CommonWaveformTests implements UIComponentC
 			WebElement textInput = portletDriver.findElement(By.id(textInputID));
 			textInput.click();
 			textInput.sendKeys("5");
+			portletLogMessages.add("Entered 5 seconds for the jump to time input field");
+			
 			portletDriver.findElement(By.id(jumpButtonID)).click();
+			portletLogMessages.add("Clicked the Jump To Time (Sec) button");
 			
 			portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 			

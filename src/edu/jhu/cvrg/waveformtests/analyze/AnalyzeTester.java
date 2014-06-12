@@ -35,19 +35,21 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 		super(site, viewPath, welcomePath, userName, passWord, existingDriver);
 	}
 	
-	public void analyzeOneECG() throws IOException {
+	public void runAnalysis() throws IOException {
 		goToPage();
 		try {
 			
 			validateFolderTree();
 			this.simulateDragAndDrop("xpath=//span[@class='ui-treenode-icon ui-icon ui-icon ui-icon-note' and 1]", "id=A6680:formAnalyze:availableStudy_data");
 			//selectSingleECG();
-			validateCheckBoxes();
+			int numCheckboxes = validateCheckBoxes();
+			System.out.println("Number of checkboxes = " + numCheckboxes);
+			long extraTime = numCheckboxes * 360;
 			
 			// click the start analysis button and wait for it to finish
 			portletDriver.findElement(By.id("A6680:formAnalyze:j_idt31")).click();
 			
-			WebDriverWait analysisWait = new WebDriverWait(portletDriver, 15); 
+			WebDriverWait analysisWait = new WebDriverWait(portletDriver, extraTime);  // provide more time to complete per algorithm selected
 		
 			analysisWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='ui-progressbar-label']")));
 			
@@ -106,7 +108,7 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 		
 	}
 	
-	public void validateCheckBoxes() throws NoSuchElementException, StaleElementReferenceException {
+	public int validateCheckBoxes() throws NoSuchElementException, StaleElementReferenceException {
 			List<WebElement> checkBoxes = portletDriver.findElements(By.xpath("//div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default']"));
 			
 			int size = checkBoxes.size() - 1;
@@ -125,6 +127,7 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 					
 					if(i == 0) {
 						checkBoxes.get(i).click();
+						portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 					}
 					else {
 						// For the check boxes within the table, each time one of them is clicked, a new div tag is created.  
@@ -149,7 +152,12 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 				}
 			}
 			
-			checkBoxes.get(7).click();
+			// click the select all checkbox again to run all algorithms on a given file.
+			portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			checkBoxes.get(0).click();
+			portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			
+			return size;
 		
 	}
 

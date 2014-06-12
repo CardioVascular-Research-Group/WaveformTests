@@ -82,6 +82,7 @@ public class CommonWaveformTests extends BaseFunctions {
 		WebDriverBackedSelenium selenium = new WebDriverBackedSelenium(portletDriver, fullHostName + "/" + portletPage);
 		
 		selenium.dragAndDropToObject(treeNode, tableElement);
+		portletLogMessages.add("Succesfully dragged the ECG entry into the datatable");
 	}
 
 }
