@@ -44,10 +44,10 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 			//selectSingleECG();
 			int numCheckboxes = validateCheckBoxes();
 			System.out.println("Number of checkboxes = " + numCheckboxes);
-			long extraTime = numCheckboxes * 360;
+			long extraTime = numCheckboxes * 72;
 			
 			// click the start analysis button and wait for it to finish
-			portletDriver.findElement(By.id("A6680:formAnalyze:j_idt31")).click();
+			portletDriver.findElement(By.id("A6680:formAnalyze:j_idt33")).click();
 			
 			WebDriverWait analysisWait = new WebDriverWait(portletDriver, extraTime);  // provide more time to complete per algorithm selected
 		
@@ -123,19 +123,19 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 					System.out.println("Name of algorithm = " + algorithmName);
 				
 					checkBoxes.get(i).click();
-					portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+					portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 					
 					if(i == 0) {
 						checkBoxes.get(i).click();
-						portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+						portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 					}
 					else {
 						// For the check boxes within the table, each time one of them is clicked, a new div tag is created.  
 						// That new div tag must be captured in order to unclick the checkbox.
-						portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+						portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 						WebElement tempCheckBox = portletDriver.findElement(By.xpath("//div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default ui-state-active']"));
 						tempCheckBox.click();
-						portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+						portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 					}
 					
 					portletLogMessages.add("The checkbox selection for " + algorithmName + " is working");
@@ -148,12 +148,12 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 				} finally {
 					// again, since new tags are created, the List of checkBox elements must be refreshed
 					checkBoxes = portletDriver.findElements(By.xpath("//div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default']"));
-					portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+					portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 				}
 			}
 			
 			// click the select all checkbox again to run all algorithms on a given file.
-			portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			portletDriver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
 			checkBoxes.get(0).click();
 			portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 			

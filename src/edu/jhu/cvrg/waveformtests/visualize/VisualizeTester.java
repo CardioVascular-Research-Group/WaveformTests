@@ -129,7 +129,7 @@ public class VisualizeTester extends CommonWaveformTests implements UIComponentC
 			break;
 		case MULTILEAD:
 			// primarily testing the navigation buttons
-			portletDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+			portletDriver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
 			ArrayList<String> navButtons = testProps.getMultiLeadNavButtons();
 			
 			portletLogMessages.add("Checking navigation buttons");
@@ -140,7 +140,7 @@ public class VisualizeTester extends CommonWaveformTests implements UIComponentC
 					portletLogMessages.add("Clicking on the " + buttonName + " button");
 					
 					portletDriver.findElement(By.xpath("//button[@id='" + buttonID + "']/span[@class='ui-button-text ui-c']")).click();
-					portletDriver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+					portletDriver.manage().timeouts().implicitlyWait(25, TimeUnit.SECONDS);
 				} catch (NoSuchElementException nse) {
 					seleniumLogMessages.add("An element was not found while validating the folder tree, here is more information:  \n" + LogfileManager.extractStackTrace(nse));
 				} catch (StaleElementReferenceException ser) {
@@ -161,7 +161,7 @@ public class VisualizeTester extends CommonWaveformTests implements UIComponentC
 			portletDriver.findElement(By.id(jumpButtonID)).click();
 			portletLogMessages.add("Clicked the Jump To Time (Sec) button");
 			
-			portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 			
 			break;
 		case SINGLELEAD:
