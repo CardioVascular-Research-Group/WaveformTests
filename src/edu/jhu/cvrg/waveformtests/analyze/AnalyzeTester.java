@@ -109,14 +109,21 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 	}
 	
 	public int validateCheckBoxes() throws NoSuchElementException, StaleElementReferenceException {
-			List<WebElement> checkBoxes = portletDriver.findElements(By.xpath("//div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default']"));
-			
-			int size = checkBoxes.size() - 1;
+			//List<WebElement> checkBoxes = portletDriver.findElements(By.xpath("//div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default']"));
+		List<WebElement> checkBoxRows = portletDriver.findElements(By.xpath("//div[@id='A6680:formAnalyze:availableAlgorithmTable']/div/table/thead/tr[@role='row']"));
+		
+		checkBoxRows.get(0).findElement(By.xpath("//th/div/div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default']")).click();
+		portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		
+		checkBoxRows.get(0).findElement(By.xpath("//th/div/div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default ui-state-active']")).click();
+		portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		
+			int size = checkBoxRows.size();
 			
 			for (int i=0; i<size; i++) {
 				try {
 					// Using xpath, navigate to the next table cell which contains the algorithm name and extract it
-					System.out.println("i = " + i);
+/*					System.out.println("i = " + i);
 					List<WebElement> algorithmElement = checkBoxes.get(i).findElements(By.xpath("//parent::div/parent::td/parent::tr"));
 					String algorithmName = algorithmElement.get(i).getAttribute("data-rk");
 					
@@ -139,7 +146,9 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 					}
 					
 					portletLogMessages.add("The checkbox selection for " + algorithmName + " is working");
-					logger.incrementAnalyzeSuccess();
+					logger.incrementAnalyzeSuccess();*/
+					
+					
 		
 
 				} catch (StaleElementReferenceException se) {
@@ -147,14 +156,15 @@ public class AnalyzeTester extends CommonWaveformTests implements UIComponentChe
 					logger.incrementAnalyzeFails();
 				} finally {
 					// again, since new tags are created, the List of checkBox elements must be refreshed
-					checkBoxes = portletDriver.findElements(By.xpath("//div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default']"));
-					portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+/*					checkBoxes = portletDriver.findElements(By.xpath("//div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default']"));
+					portletDriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);*/
 				}
 			}
 			
 			// click the select all checkbox again to run all algorithms on a given file.
 			portletDriver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
-			checkBoxes.get(0).click();
+			//checkBoxRows.get(0).click();
+			checkBoxRows.get(0).findElement(By.xpath("//th/div/div[@class='ui-chkbox-box ui-widget ui-corner-all ui-state-default']")).click();
 			portletDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 			
 			return size;
